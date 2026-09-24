@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AGS Konu Takip Uygulaması</title>
+
+<style>
+body{
+    font-family: Arial, sans-serif;
+    max-width: 1100px;
+    margin: 20px auto;
+    padding: 20px;
+    background:#f5f7fb;
+}
+
+h1{
+    text-align:center;
+}
+
+.kart{
+    background:white;
+    border-radius:12px;
+    padding:15px;
+    margin-bottom:15px;
+    box-shadow:0 2px 8px rgba(0,0,0,.08);
+}
+
+h2{
+    margin-top:0;
+    color:#1f4ea3;
+}
+
+label{
+    display:block;
+    padding:6px 0;
+    cursor:pointer;
+}
+
+.ust{
+    position:sticky;
+    top:0;
+    background:white;
+    padding:15px;
+    border-radius:12px;
+    margin-bottom:20px;
+    box-shadow:0 2px 8px rgba(0,0,0,.08);
+}
+
+progress{
+    width:100%;
+    height:25px;
+}
+
+.sayac{
+    font-size:20px;
+    font-weight:bold;
+    text-align:center;
+    margin-top:10px;
+}
+
+button{
+    padding:10px 15px;
+    border:none;
+    border-radius:8px;
+    background:#d9534f;
+    color:white;
+    cursor:pointer;
+}
+</style>
+</head>
+<body>
+
+<div class="ust">
+    <h1>AGS Konu Takip Uygulaması</h1>
+    <progress id="bar" value="0" max="100"></progress>
+    <div class="sayac" id="oran">%0 Tamamlandı</div>
+    <br>
+    <button onclick="sifirla()">Tüm Tikleri Temizle</button>
+</div>
+
+<div id="icerik"></div>
+
+<script>
+
+const konular = {
+"Sözel Yetenek":[
+"Sözcükte Anlam",
+"Cümlede Anlam",
+"Anlatımın Oluşması",
+"Paragrafta Anlam",
+"Sözel Mantık"
+],
+
+"Sayısal Yetenek":[
+"Temel Matematik",
+"Problem Türleri",
+"Grafik ve Tablo Yorumlama",
+"Mantıksal Muhakeme Problemleri"
+],
+
+"Tarih":[
+"Osmanlı Öncesi Türk Tarihi",
+"Osmanlı Tarihi",
+"Atatürk İlkeleri ve İnkılap Tarihi",
+"Çağdaş Türk ve Dünya Tarihi"
+],
+
+"Türkiye Coğrafyası":[
+"Fiziki Coğrafya",
+"Beşeri ve Ekonomik Coğrafya"
+],
+
+"Eğitim Bilimleri":[
+"Öğrenme Psikolojisi",
+"Gelişim Psikolojisi",
+"Program Okuryazarlığı",
+"Ölçme ve Değerlendirme",
+"Öğretim İlke ve Yöntemleri",
+"Sınıf Yönetimi",
+"Rehberlik",
+"Özel Eğitim",
+"Eğitim Teknolojileri",
+"Öğretmenlik Meslek Etiği",
+"Türk Milli Eğitim Sistemi",
+"Türkiye Yüzyılı Maarif Modeli"
+],
+
+"Mevzuat":[
+"Anayasa ve İnsan Hakları",
+"1739 Sayılı Milli Eğitim Temel Kanunu",
+"222 Sayılı İlköğretim ve Eğitim Kanunu",
+"Öğretmenlik Meslek Kanunu"
+]
+};
+
+const alan=document.getElementById("icerik");
+
+for(let ders in konular){
+
+    let html=`<div class="kart">
+    <h2>${ders}</h2>`;
+
+    konular[ders].forEach((konu,index)=>{
+        const id=ders+"-"+index;
+
+        html+=`
+        <label>
+        <input type="checkbox" id="${id}" onchange="kaydet()">
+        ${konu}
+        </label>`;
+    });
+
+    html+="</div>";
+    alan.innerHTML+=html;
+}
+
+function kaydet(){
+
+    const kutular=document.querySelectorAll("input[type=checkbox]");
+
+    let tamam=0;
+
+    kutular.forEach(k=>{
+        localStorage.setItem(k.id,k.checked);
+
+        if(k.checked) tamam++;
+    });
+
+    const yuzde=Math.round((tamam/kutular.length)*100);
+
+    document.getElementById("bar").value=yuzde;
+    document.getElementById("oran").innerHTML=
+        `${tamam} / ${kutular.length} konu tamamlandı (%${yuzde})`;
+}
+
+function yukle(){
+
+    const kutular=document.querySelectorAll("input[type=checkbox]");
+
+    kutular.forEach(k=>{
+        k.checked=localStorage.getItem(k.id)==="true";
+    });
+
+    kaydet();
+}
+
+function sifirla(){
+
+    if(confirm("Tüm ilerleme silinsin mi?")){
+        localStorage.clear();
+        location.reload();
+    }
+}
+
+yukle();
+
+</script>
+
+</body>
+</html>
